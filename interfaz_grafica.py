@@ -135,12 +135,12 @@ class InterfazGrafica:
         # Recorremos la lista de archivos a convertir.
         for archivo in archivos_a_convertir:
             try:
-                # Abrimos el archivo de origen con codificación ANSI.
-                with codecs.open(os.path.join(carpeta_origen, archivo), 'r', 'ansi') as archivo_origen:
+                # Abrimos el archivo de origen con la codificación seleccionada.
+                with codecs.open(os.path.join(carpeta_origen, archivo), 'r', codificacion_origen) as archivo_origen:
                     contenido = archivo_origen.read()  # Leemos el contenido del archivo de origen.
-
-                # Creamos un nuevo archivo en la carpeta de destino con codificación UTF-8 y escribimos el contenido convertido.
-                with codecs.open(os.path.join(carpeta_destino, archivo), 'w', 'utf-8') as archivo_destino:
+                
+                # Creamos un nuevo archivo en la carpeta de destino con la codificación seleccionada y escribimos el contenido convertido.
+                with codecs.open(os.path.join(carpeta_destino, archivo), 'w', codificacion_destino) as archivo_destino:
                     archivo_destino.write(contenido)  # Escribimos el contenido convertido en el nuevo archivo.
 
                 archivos_exitosos.append(archivo)  # Agregamos el archivo a la lista de exitosos.
