@@ -4,11 +4,11 @@
 # Incluye una barra de progreso para mostrar el estado de la conversión.
 
 # Importamos las bibliotecas y módulos necesarios.
-import tkinter as tk
-from tkinter import filedialog, ttk, messagebox
-from funcionalidades import Funcionalidades
-import os
-import codecs
+import tkinter as tk  # Importamos la biblioteca tkinter para crear la interfaz gráfica.
+from tkinter import filedialog, ttk, messagebox  # Importamos filedialog para abrir cuadros de diálogo de selección de directorio, ttk para widgets mejorados y messagebox para mensajes de diálogo.
+from funcionalidades import Funcionalidades  # Importamos la clase Funcionalidades desde el archivo funcionalidades.py
+import os  # Importamos el módulo os para trabajar con rutas y directorios.
+import codecs  # Importamos la biblioteca codecs para manejar diferentes codificaciones de archivos de texto.
 
 # Definimos la clase InterfazGrafica, que gestionará la interfaz de usuario.
 class InterfazGrafica:
@@ -38,25 +38,16 @@ class InterfazGrafica:
         self.entry_carpeta_destino.insert(0, self.carpeta_destino_por_defecto)
 
         self.label_codificacion_origen = tk.Label(self.ventana, text="Codificación Origen:")
-        self.combobox_codificacion_origen = ttk.Combobox(self.ventana, values=["ANSI", "UTF-8"])
+        self.combobox_codificacion_origen = ttk.Combobox(self.ventana, values=["ANSI", "UTF-8"], state="readonly")
         self.combobox_codificacion_origen.set("ANSI")
 
         self.label_codificacion_destino = tk.Label(self.ventana, text="Codificación Destino:")
-        self.combobox_codificacion_destino = ttk.Combobox(self.ventana, values=["ANSI", "UTF-8"])
+        self.combobox_codificacion_destino = ttk.Combobox(self.ventana, values=["ANSI", "UTF-8"], state="readonly")
         self.combobox_codificacion_destino.set("UTF-8")
 
         self.button_carpeta_origen = tk.Button(self.ventana, text="Abrir Carpeta Origen", command=self.abrir_carpeta_origen)
         self.button_carpeta_destino = tk.Button(self.ventana, text="Abrir Carpeta Destino", command=self.abrir_carpeta_destino)
         self.button_convertir = tk.Button(self.ventana, text="Convertir", command=self.convertir_archivos)
-
-        # Creamos una etiqueta para mostrar el progreso.
-        self.label_progreso = tk.Label(self.ventana, text="Progreso:")
-        self.label_progreso.grid(row=5, column=0, padx=10, pady=5)
-
-        # Creamos una barra de progreso.
-        self.barra_progreso = ttk.Progressbar(self.ventana, length=200, mode="determinate")
-        self.barra_progreso.grid(row=5, column=1, padx=10, pady=5)
-        self.barra_progreso["value"] = 0  # Inicializamos la barra de progreso en 0.
 
         # Colocamos los elementos en la ventana utilizando la cuadrícula.
         self.label_carpeta_origen.grid(row=0, column=0, padx=10, pady=5)
@@ -70,6 +61,23 @@ class InterfazGrafica:
         self.button_carpeta_origen.grid(row=0, column=2, padx=10, pady=5)
         self.button_carpeta_destino.grid(row=1, column=2, padx=10, pady=5)
         self.button_convertir.grid(row=4, column=0, columnspan=3, pady=10)
+
+        # Creamos una etiqueta para la lista de archivos procesados con éxito.
+        self.label_exitosos = tk.Label(self.ventana, text="Archivos Procesados con Éxito:")
+        self.label_exitosos.grid(row=6, column=0, padx=10, pady=5)
+
+        # Creamos una Listbox para mostrar los archivos procesados con éxito.
+        self.lista_exitosos = tk.Listbox(self.ventana, width=40, height=10)
+        self.lista_exitosos.grid(row=7, column=0, columnspan=3, padx=10, pady=5, sticky="nsew")  # Usamos "sticky" para centrar en todas las direcciones.
+
+        # Creamos una barra de desplazamiento para la Listbox.
+        scrollbar = ttk.Scrollbar(self.ventana, orient="vertical", command=self.lista_exitosos.yview)
+        scrollbar.grid(row=7, column=3, sticky="ns")
+        self.lista_exitosos.config(yscrollcommand=scrollbar.set)
+
+        # Creamos una barra de progreso para mostrar el progreso de la conversión.
+        self.barra_progreso = ttk.Progressbar(self.ventana, length=300)
+        self.barra_progreso.grid(row=5, column=0, columnspan=3, pady=10)
 
     # Función para abrir la carpeta de origen y seleccionar una nueva ruta.
     def abrir_carpeta_origen(self):
@@ -91,49 +99,73 @@ class InterfazGrafica:
     def convertir_archivos(self):
         codificacion_origen = self.combobox_codificacion_origen.get()
         codificacion_destino = self.combobox_codificacion_destino.get()
-        
+
         carpeta_origen = self.entry_carpeta_origen.get()
         carpeta_destino = self.entry_carpeta_destino.get()
 
+        # Si las entradas están vacías, utilizamos las rutas por defecto.
         if not carpeta_origen:
             carpeta_origen = self.carpeta_origen_por_defecto
         if not carpeta_destino:
             carpeta_destino = self.carpeta_destino_por_defecto
 
+        # Verificamos si las rutas de origen y destino existen.
         if not os.path.exists(carpeta_origen) or not os.path.exists(carpeta_destino):
             self.mostrar_mensaje_error("Ingrese rutas de origen y destino válidas.")
             return
 
-        archivos_a_convertir = [f for f in os.listdir(carpeta_origen) if f.endswith('.txt')]
-        errores = []
-
-        # Configuramos la barra de progreso.
-        self.barra_progreso["maximum"] = len(archivos_a_convertir)
-        self.barra_progreso["value"] = 0  # Inicializamos la barra de progreso en 0.
+        # Realizamos la conversión según la codificación seleccionada.
+        if codificacion_origen == codificacion_destino:
+            self.mostrar_mensaje_informacion("Mismo formato detectado. No se realizará la conversión.")
+            return
 
         funcionalidades = Funcionalidades()
 
-        for idx, archivo in enumerate(archivos_a_convertir, start=1):
+        # Obtenemos la lista de archivos a convertir en la carpeta de origen con extensión .txt.
+        archivos_a_convertir = [f for f in os.listdir(carpeta_origen) if f.endswith('.txt')]
+        errores = []  # Creamos una lista para rastrear errores durante la conversión.
+        archivos_exitosos = []  # Creamos una lista para rastrear archivos procesados con éxito.
+
+        # Agregamos el mensaje de inicio a la Listbox.
+        self.lista_exitosos.insert(tk.END, "====== Iniciando conversión ======")
+
+        # Configuramos el máximo valor de la barra de progreso.
+        self.barra_progreso["maximum"] = len(archivos_a_convertir)
+
+        # Recorremos la lista de archivos a convertir.
+        for archivo in archivos_a_convertir:
             try:
+                # Abrimos el archivo de origen con codificación ANSI.
                 with codecs.open(os.path.join(carpeta_origen, archivo), 'r', 'ansi') as archivo_origen:
-                    contenido = archivo_origen.read()
+                    contenido = archivo_origen.read()  # Leemos el contenido del archivo de origen.
 
+                # Creamos un nuevo archivo en la carpeta de destino con codificación UTF-8 y escribimos el contenido convertido.
                 with codecs.open(os.path.join(carpeta_destino, archivo), 'w', 'utf-8') as archivo_destino:
-                    archivo_destino.write(contenido)
+                    archivo_destino.write(contenido)  # Escribimos el contenido convertido en el nuevo archivo.
+
+                archivos_exitosos.append(archivo)  # Agregamos el archivo a la lista de exitosos.
+
             except Exception as e:
-                errores.append(f"Error al convertir {archivo}: {str(e)}")
+                errores.append(f"Error al convertir {archivo}: {str(e)}")  # Capturamos y registramos errores.
 
-            # Actualizamos la barra de progreso.
-            self.barra_progreso["value"] = idx
-            self.ventana.update()  # Actualizamos la ventana para mostrar el progreso.
+            # Actualizamos el valor de la barra de progreso.
+            self.barra_progreso["value"] += 1
+            self.ventana.update_idletasks()  # Actualizamos la ventana para reflejar el progreso.
 
+        # Si se producen errores, mostramos un mensaje de error con detalles.
         if errores:
             self.mostrar_mensaje_error("Se produjeron errores al convertir algunos archivos:\n\n" + "\n".join(errores))
-        else:
+
+        # Mostramos un mensaje de éxito si no hay errores y al menos un archivo fue procesado con éxito.
+        elif archivos_exitosos:
             self.mostrar_mensaje_informacion("La conversión se completó exitosamente.")
+
+        # Agregamos los archivos procesados con éxito a la Listbox.
+        for archivo_exitoso in archivos_exitosos:
+            self.lista_exitosos.insert(tk.END, archivo_exitoso)
         
-        # Restauramos la barra de progreso después de la conversión.
-        self.barra_progreso["value"] = 0
+        # Agregamos el mensaje de fin a la Listbox.
+        self.lista_exitosos.insert(tk.END, "====== Proceso terminado ========")
 
     # Función para mostrar un mensaje de error.
     def mostrar_mensaje_error(self, mensaje):
