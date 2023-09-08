@@ -1,0 +1,5 @@
+Este es el contenido del archivo 3 en formato ANSI.
+12345
+67890
+Estos son algunos números.
+¡Disfruta del contenido!

@@ -1,0 +1,5 @@
+Este es el contenido del archivo 5 en formato ANSI.
+¿Qué tal tu día?
+Espero que estés teniendo un buen día.
+No dudes en contactarme si necesitas algo más.
+Este archivo es ANSI.

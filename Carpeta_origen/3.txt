@@ -1,0 +1,4 @@
+Este es el contenido del archivo 4 en formato ANSI.
+Hoy es un hermoso día.
+El sol brilla en el cielo azul.
+Es perfecto para dar un paseo.

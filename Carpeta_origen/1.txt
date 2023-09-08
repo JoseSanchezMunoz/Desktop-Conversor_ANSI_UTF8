@@ -1,0 +1,4 @@
+Este es el contenido del archivo 1 en formato ANSI.
+¡Hola, mundo!
+Este es un archivo de ejemplo.
+Espero que te sea útil.
