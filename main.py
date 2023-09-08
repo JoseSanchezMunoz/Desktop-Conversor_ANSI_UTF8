@@ -1,4 +1,8 @@
-#main.py
+# main.py
+# Archivo principal del programa.
+# Inicia la interfaz gráfica y gestiona la conversión de archivos de texto.
+# Importa las clases InterfazGrafica (interfaz_grafica.py) y Funcionalidades (funcionalidades.py).
+
 # Importamos las clases y módulos necesarios.
 from interfaz_grafica import InterfazGrafica  # Importamos la clase InterfazGrafica desde el archivo interfaz_grafica.py
 from funcionalidades import Funcionalidades  # Importamos la clase Funcionalidades desde el archivo funcionalidades.py

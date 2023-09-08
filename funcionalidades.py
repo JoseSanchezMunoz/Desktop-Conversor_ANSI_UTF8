@@ -1,4 +1,8 @@
-#funcionalidades.py
+# funcionalidades.py
+# Contiene funciones para convertir archivos de una codificación a otra.
+# Maneja mensajes de confirmación, error e información.
+# Es utilizado por la interfaz gráfica para realizar la conversión.
+
 # Importamos los módulos y bibliotecas necesarios.
 import os  # Importamos el módulo os para trabajar con rutas y directorios.
 import codecs  # Importamos la biblioteca codecs para manejar diferentes codificaciones de archivos de texto.

@@ -5,7 +5,7 @@
 
 ## Requisitos
 
-Antes de ejecutar este programa, asegúrate de tener Python instalado en tu sistema. Además, no se requieren bibliotecas externas, ya que el programa utiliza bibliotecas estándar de Python.
+Antes de ejecutar este programa, asegúrate de tener Python instalado en tu sistema (3.11). Además, no se requieren bibliotecas externas, ya que el programa utiliza bibliotecas estándar de Python.
 
 ## Uso
 
