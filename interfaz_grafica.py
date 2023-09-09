@@ -147,6 +147,9 @@ class InterfazGrafica:
 
             except Exception as e:
                 errores.append(f"Error al convertir {archivo}: {str(e)}")  # Capturamos y registramos errores.
+                # Agregamos el archivo a la Listbox como "(Error: no procesado)" en rojo.
+                self.lista_exitosos.insert(tk.END, f"{archivo} (Error: no procesado)")
+                self.lista_exitosos.itemconfig(tk.END, {'fg': 'red'})
 
             # Actualizamos el valor de la barra de progreso.
             self.barra_progreso["value"] += 1
